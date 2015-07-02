@@ -18,11 +18,15 @@
 #include <lightspeed/base/containers/autoArray.tcc>
 #include <lightspeed/base/memory/smallAlloc.h>
 
+#include "threadHook.h"
 namespace LightMySQL {
+
+static ThreadHook thrhook;
 
 Connection::Connection()
 	:connected(false),logObject(0),transactionObjects(0)
 {
+	thrhook.install();
 	mysql_init(&conn);
 }
 

@@ -7,6 +7,8 @@
 
 #ifndef LIGHTMYSQL_BREDY_MYDBGLOG_H__
 #define LIGHTMYSQL_BREDY_MYDBGLOG_H__
+#include <mysql/mysql.h>
+
 #include "logging.h"
 #include "lightspeed/base/containers/constStr.h"
 

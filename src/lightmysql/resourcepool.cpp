@@ -16,7 +16,7 @@ namespace LightMySQL {
 using namespace LightSpeed;
 
 
-MySQLResourcePool::MySQLResourcePool(const ConnectParams& params, unsigned long flags,
+ResourcePool::ResourcePool(const ConnectParams& params, unsigned long flags,
 									IDebugLog *log,
 									natural limit, natural resTimeout, natural waitTimeout)
 :AbstractResourcePool(limit,resTimeout,waitTimeout),params(params),flags(flags),log(log)
@@ -24,8 +24,8 @@ MySQLResourcePool::MySQLResourcePool(const ConnectParams& params, unsigned long 
 
 }
 
-MySQLResource* MySQLResourcePool::createResource() {
-	MySQLResource *r =  new MySQLResource;
+Resource* ResourcePool::createResource() {
+	Resource *r =  new Resource;
 	r->setLogObject(log);
 	r->connect(params,flags);
 	return r;
@@ -34,17 +34,17 @@ MySQLResource* MySQLResourcePool::createResource() {
 
 const char *noMasterConfiguredExceptionText = "No master database is configured, data are read only";
 
-MySQLResPtr MySQLMasterSlavePool::getMaster() {
+MySQLResPtr MasterSlavePool::getMaster() {
 	if (master == nil) throw NoMasterDatabaseConfiguredException(THISLOCATION);
 	return MySQLResPtr(*master);
 }
 
-MySQLResPtr MySQLMasterSlavePool::getSlave() {
+MySQLResPtr MasterSlavePool::getSlave() {
 	if (slave == nil) return getMaster();
 	return MySQLResPtr(*slave);
 }
 
-static void configureDB(MySQLServerCfg &t, const LightSpeed::IniConfig::Section & cfg) {
+static void configureDB(ServerCfg &t, const LightSpeed::IniConfig::Section & cfg) {
 	t.enabled = false;
 	cfg.get(t.enabled,"enable");
 	if (t.enabled) {
@@ -65,29 +65,29 @@ void MySQLConfig::configure(const LightSpeed::IniConfig& cfg, ConstStrA section)
 
 }
 
-const MySQLMasterSlavePool::PoolPtr &MySQLMasterSlavePool::getMasterPool() {
+const MasterSlavePool::PoolPtr &MasterSlavePool::getMasterPool() {
 	if (master == nil) throw NoMasterDatabaseConfiguredException(THISLOCATION);
 	return master;
 }
-const MySQLMasterSlavePool::PoolPtr &MySQLMasterSlavePool::getSlavePool() {
+const MasterSlavePool::PoolPtr &MasterSlavePool::getSlavePool() {
 	if (slave == nil) return master; else return slave;
 }
 
 
-void MySQLMasterSlavePool::init(const MySQLConfig& cfg, unsigned long flags) {
+void MasterSlavePool::init(const MySQLConfig& cfg, unsigned long flags) {
 	if (cfg.master.enabled) {
-		master = new MySQLResourcePool(cfg.master.connparams,flags,cfg.master.logObject,cfg.master.maxConn,cfg.master.maxExpire,cfg.master.maxWait);
+		master = new ResourcePool(cfg.master.connparams,flags,cfg.master.logObject,cfg.master.maxConn,cfg.master.maxExpire,cfg.master.maxWait);
 	} else {
 		master = nil;
 	}
 	if (cfg.slave.enabled) {
-		slave = new MySQLResourcePool(cfg.slave.connparams,flags,cfg.slave.logObject,cfg.slave.maxConn,cfg.slave.maxExpire,cfg.slave.maxWait);
+		slave = new ResourcePool(cfg.slave.connparams,flags,cfg.slave.logObject,cfg.slave.maxConn,cfg.slave.maxExpire,cfg.slave.maxWait);
 	} else {
 		slave = nil;
 	}
 }
 
-bool MySQLResource::expired() const {
+bool Resource::expired() const {
 
 	if (AbstractResource::expired()) return true;
 

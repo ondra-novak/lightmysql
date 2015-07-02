@@ -3,11 +3,6 @@
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
-CPP_SRCS += \
-../src/lightmysql/enum.cpp \
-../src/lightmysql/mydbglog.cpp \
-../src/lightmysql/resourcepool.cpp 
-
 CC_SRCS += \
 ../src/lightmysql/cfghelper.cc \
 ../src/lightmysql/connection.cc \
@@ -16,6 +11,22 @@ CC_SRCS += \
 ../src/lightmysql/row.cc \
 ../src/lightmysql/row_std.cc \
 ../src/lightmysql/transaction.cc 
+
+CPP_SRCS += \
+../src/lightmysql/enum.cpp \
+../src/lightmysql/mydbglog.cpp \
+../src/lightmysql/resourcepool.cpp \
+../src/lightmysql/shareTransaction.cpp \
+../src/lightmysql/threadHook.cpp 
+
+CC_DEPS += \
+./src/lightmysql/cfghelper.d \
+./src/lightmysql/connection.d \
+./src/lightmysql/query.d \
+./src/lightmysql/result.d \
+./src/lightmysql/row.d \
+./src/lightmysql/row_std.d \
+./src/lightmysql/transaction.d 
 
 OBJS += \
 ./src/lightmysql/cfghelper.o \
@@ -27,21 +38,16 @@ OBJS += \
 ./src/lightmysql/result.o \
 ./src/lightmysql/row.o \
 ./src/lightmysql/row_std.o \
+./src/lightmysql/shareTransaction.o \
+./src/lightmysql/threadHook.o \
 ./src/lightmysql/transaction.o 
-
-CC_DEPS += \
-./src/lightmysql/cfghelper.d \
-./src/lightmysql/connection.d \
-./src/lightmysql/query.d \
-./src/lightmysql/result.d \
-./src/lightmysql/row.d \
-./src/lightmysql/row_std.d \
-./src/lightmysql/transaction.d 
 
 CPP_DEPS += \
 ./src/lightmysql/enum.d \
 ./src/lightmysql/mydbglog.d \
-./src/lightmysql/resourcepool.d 
+./src/lightmysql/resourcepool.d \
+./src/lightmysql/shareTransaction.d \
+./src/lightmysql/threadHook.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

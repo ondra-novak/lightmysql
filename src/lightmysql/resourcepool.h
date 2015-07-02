@@ -20,11 +20,11 @@ class IniConfig;
 namespace LightMySQL {
 
 ///Resource which contains one mysql connection
-class MySQLResource: public AbstractResource, public Connection {
+class Resource: public AbstractResource, public Connection {
 public:
 
 	///construct mysql resource
-	MySQLResource():q(*this) {}
+	Resource():q(*this) {}
 
 	///Retrieve transaction object
 	/** You should use transaction object for most of the
@@ -48,14 +48,18 @@ public:
 
 protected:
 	Query q;
-
+private:
+	Resource(const Resource &other);
+	Resource &operator=(const Resource &other);
 };
+
+typedef Resource MySQLResource;
 
 ///Pool of MYSQL resources (connection)
 /** Object keeps opened connections or additionally creates
  *  fresh on the request
  */
-class MySQLResourcePool: public AbstractResourcePool {
+class ResourcePool: public AbstractResourcePool {
 public:
 	///Construction of the resource pool
 	/**
@@ -67,7 +71,7 @@ public:
 	 * @param waitTimeout defines how long thread can wait to acquire connection
 	 *        before exception is thrown
 	 */
-	MySQLResourcePool(const ConnectParams &params,
+	ResourcePool(const ConnectParams &params,
 			unsigned long flags,
 			IDebugLog *log,
 			natural limit, natural resTimeout, natural waitTimeout);
@@ -82,7 +86,7 @@ public:
 	 *
 	 * @return pointer to created resource
 	 */
-	virtual MySQLResource *createResource();
+	virtual Resource *createResource();
 protected:
 	virtual const char *getResourceName() const {return "mysql connection";}
 
@@ -95,12 +99,15 @@ protected:
 
 };
 
+typedef ResourcePool MySQLResourcePool;
+
 ///Pointer to resource acquired from the pool.
 /** Acquired resource on creation and releases resource on destruction */
-typedef ResourcePtr<MySQLResource> MySQLResPtr;
+typedef ResourcePtr<Resource> MySQLResPtr;
+typedef ResourcePtr<Resource> ResPtr;
 
 ///Complete configuration of the mysql resource in the pool
-struct MySQLServerCfg {
+struct ServerCfg {
 	///true whether this configuration is enabled (and valid)
 	bool enabled;
 	///connection params
@@ -117,10 +124,12 @@ struct MySQLServerCfg {
 
 };
 
+typedef ServerCfg MySQLServerCfg;
+
 ///Complete configuration of dual mysql architecture - master/slave
 struct MySQLConfig {
 	///configuration for master and slave
-	MySQLServerCfg master,slave;
+	ServerCfg master,slave;
 
 
 	///reads configuration from the IniConfig
@@ -132,9 +141,9 @@ struct MySQLConfig {
 };
 
 ///Pool of the mysql connection for dual (master/slave) architecture
-class MySQLMasterSlavePool {
+class MasterSlavePool {
 public:
-	typedef AllocPointer<MySQLResourcePool> PoolPtr;
+	typedef AllocPointer<ResourcePool> PoolPtr;
 
 
 	///Initializes pool using configuration
@@ -202,6 +211,8 @@ protected:
 	PoolPtr slave;
 
 };
+
+typedef MasterSlavePool MySQLMasterSlavePool;
 
 extern const char *noMasterConfiguredExceptionText;
 typedef GenException<noMasterConfiguredExceptionText> NoMasterDatabaseConfiguredException;
