@@ -649,7 +649,7 @@ Query &SubQuery::end() {
 }
 
 Query &SubQuery::endsub() {
-	return leave().leave();
+	return leave();
 }
 
 SubQuery::SubQuery(Query& q, ConstStrA suffix):Query(q),parent(q),suffix(suffix),active(true)
