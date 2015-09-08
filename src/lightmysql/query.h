@@ -320,7 +320,7 @@ protected:
 		cmdNotSet,cmdInsert,cmdUpdate,cmdReplace,cmdSet,
 		cmdDelete,cmdSelect,cmdFrom,cmdJoin,cmdLeftJoin,
 		cmdOn,cmdWhere,cmdOrder,cmdGroupBy,cmdHaving,cmdList,cmdAnd,cmdOr,
-		cmdOnDuplicateKeyUpdate,cmdLimit,cmdValues
+		cmdOnDuplicateKeyUpdate,cmdOnDuplicateKeyUpdateBlock,cmdLimit,cmdValues
 	};
 
 	CmdType lastCmd;

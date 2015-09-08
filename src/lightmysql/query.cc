@@ -312,8 +312,10 @@ Query &Query::INSERT_IGNORE(ConstStrA pattern) {
 
 
 Query& Query::SET(ConstStrA f, ConstStrA expr) {
-	if (lastCmd == cmdOnDuplicateKeyUpdate)
+	if (lastCmd == cmdOnDuplicateKeyUpdateBlock)
 		beginCommand(cmdSet,"ON DUPLICATE KEY UPDATE");
+	else if (lastCmd == cmdOnDuplicateKeyUpdate)
+		beginCommand(lastCmd,"ON DUPLICATE KEY UPDATE");
 	else
 		beginCommand(cmdSet, "SET");
 	append("%1=").field(f);
@@ -501,8 +503,8 @@ Query& Query::HAVING(ConstStrA pattern) {
 }
 
 Query& Query::ON_DUPLICATE_KEY_UPDATE(ConstStrA field, ConstStrA expr) {
-	beginCommand(cmdSet, "ON DUPLICATE KEY UPDATE");
-	append("%1=").arg(field);
+	beginCommand(cmdOnDuplicateKeyUpdate, "ON DUPLICATE KEY UPDATE");
+	append("%1=").field(field);
 	append(expr);
 	return *this;
 }
@@ -603,7 +605,7 @@ Query& Query::ON_DUPLICATE_KEY_UPDATE(ConstStrA field) {
 
 
 Query& Query::ON_DUPLICATE_KEY_UPDATE() {
-	lastCmd = cmdOnDuplicateKeyUpdate;
+	lastCmd = cmdOnDuplicateKeyUpdateBlock;
 	return *this;
 }
 
