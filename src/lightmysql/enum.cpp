@@ -15,17 +15,14 @@ namespace LightMySQL {
 
 void Enum::loadMap(Transaction& trn, ConstStrA table, ConstStrA col, natural invalidValue) {
 
-	Result res = trn.SELECT("COLUMN_TYPE")
-			.FROM("information_schema.COLUMNS").WHERE("TABLE_SCHEMA = DATABASE()")
-				.WHERE("TABLE_NAME = %1").arg(table)
-				.WHERE("COLUMN_NAME = %1").arg(col).exec();
+	Result res = trn("SHOW COLUMNS FROM %1 LIKE %2").field(table).arg(col).exec();
 	strpool.clear();
 	map.clear();
 	if (res.empty()) {
 		throw EnumException(THISLOCATION,table,col,"Field doesn't exist");
 	}
 	Row rw = res.getNext();
-	ConstStrA val = rw[0].as<ConstStrA>();
+	ConstStrA val = rw["Type"].as<ConstStrA>();
 	bool isSet;
 	if (val.head(4) == ConstStrA("set(")) {
 		val = val.crop(4,1);
