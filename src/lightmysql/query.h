@@ -107,6 +107,9 @@ public:
 	Query &arg(unsigned long long i);
 	///feed by argument
 	Query &arg(double val);
+	///insert multiple values
+	template<typename H, typename T>
+	Query &arg(const std::pair<H,T> &val);
 	///feed by name of field
 	Query &field(ConstStrA field);
 	Query &field(ConstStrA table, ConstStrA val);
@@ -292,6 +295,7 @@ public:
 		else return null();
 	}
 
+
 protected:
 
 	///Connection
@@ -315,6 +319,11 @@ protected:
 		paramEnds.resize(paramEnds.length()-1);
 		return *this;
 	}
+	Query &finishArg() {
+		paramEnds.add(paramBuffer.length());
+		return *this;
+	}
+
 
 	enum CmdType {
 		cmdNotSet,cmdInsert,cmdUpdate,cmdReplace,cmdSet,
@@ -325,11 +334,13 @@ protected:
 
 	CmdType lastCmd;
 	bool executed;
+	int pairlevel;
 
 	bool beginCommand(CmdType cmd, ConstStrA cmdName);
 	bool beginCommand(CmdType cmd, ConstStrA cmdName, ConstStrA separator);
 	void appendFieldName(ConstStrA fieldName);
 	void appendFieldName(ConstStrA fieldName, ConstStrA asName);
+
 
 };
 
@@ -379,6 +390,26 @@ Query &Query::inline_table(ConstStringT<T> arr, ConstStrA fieldName, ConstStrA c
 				.appendArg().field(fieldName)
 				.appendArg().raw(" LIMIT 0");
 
+	}
+	return *this;
+
+}
+
+template<typename H, typename T>
+Query &Query::arg(const std::pair<H,T> &val) {
+	if (pairlevel == 0) {
+		paramBuffer.add('(');
+	}
+	pairlevel++;
+	arg(val.first);
+	appendArg();
+	paramBuffer.add(',');
+	arg(val.second);
+	pairlevel--;
+	if (pairlevel == 0) {
+		appendArg();
+		paramBuffer.add(')');
+		finishArg();
 	}
 	return *this;
 

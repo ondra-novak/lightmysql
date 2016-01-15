@@ -26,11 +26,11 @@ using LightSpeed::SmallAlloc;
 
 namespace LightMySQL {
 
-Query::Query(IConnection &conn):conn(conn),commitPos(0),lastCmd(cmdNotSet),executed(0) {
+Query::Query(IConnection &conn):conn(conn),commitPos(0),lastCmd(cmdNotSet),executed(0),pairlevel(0) {
 
 }
 
-Query::Query(const Query &other):conn(other.conn),lastCmd(cmdNotSet),executed(true) {}
+Query::Query(const Query &other):conn(other.conn),lastCmd(cmdNotSet),executed(true),pairlevel(0) {}
 
 Query & Query::arg(long long i)
 {
