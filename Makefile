@@ -8,7 +8,7 @@ selectpath=$(abspath $(firstword $(foreach dir,$(1),$(wildcard $(dir)$(2)))))
 LIBLIGHTSPEED=$(call selectpath,$(SEARCHPATHS),lightspeed)
 NEEDLIBS:=$(LIBLIGHTSPEED)
 
-include building/build_lib.mk
+include $(LIBLIGHTSPEED)/building/build_lib.mk
 
 
 	
