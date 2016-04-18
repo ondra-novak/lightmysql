@@ -212,7 +212,7 @@ public:
 	 * @param i zero-based index
 	 * @return field name
 	 */
-	StringA getFieldName(natural i) const;
+	ConstStrA getFieldName(natural i) const;
 
 	///returns MYSQL field information of field at given index
 	/**

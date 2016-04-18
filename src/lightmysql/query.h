@@ -136,8 +136,14 @@ public:
 	}
 
 	///feed by array separated by specified separator
-	template<typename T>
-	Query &arg(ConstStringT<T> arr, ConstStrA separator, Query & (Query::*op)(T));
+	/**
+	 * @param arr array to use
+	 * @param separator separator between items
+	 * @param fn conversion function. It have to convert item to some known item
+	 * @return this object
+	 */
+	template<typename T, typename Fn>
+	Query &arg(ConstStringT<T> arr, ConstStrA separator, Fn fn);
 
 
 	///feed by raw string.
@@ -359,15 +365,15 @@ Query &Query::arg(ConstStringT<T> arr) {
 	}
 	return *this;
 }
-template<typename T>
-Query &Query::arg(ConstStringT<T> arr, ConstStrA separator, Query & (Query::*op)(T)) {
+template<typename T, typename Fn>
+	Query &Query::arg(ConstStringT<T> arr, ConstStrA separator, Fn fn) {
 	if (arr.length() > 0) {
 		typename ConstStringT<T>::Iterator iter = arr.getFwIter();
-		(this->*op)(iter.getNext());
+		arg(fn(iter.getNext()));
 		while (iter.hasItems()) {
 			appendArg();
 			paramBuffer.append(separator);
-			(this->*op)(iter.getNext());
+			arg(fn(iter.getNext()));
 		}
 	} else {
 		this->null();

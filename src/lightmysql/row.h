@@ -139,7 +139,7 @@ private:
 	void operator=(const Result &other);
 };
 
-template<> struct FieldTypeConv<bool> {static unsigned int convert(const FieldContent &f);};
+template<> struct FieldTypeConv<bool> {static bool convert(const FieldContent &f);};
 template<> struct FieldTypeConv<unsigned int> {static unsigned int convert(const FieldContent &f);};
 template<> struct FieldTypeConv<signed int> {static signed int convert(const FieldContent &f);};
 template<> struct FieldTypeConv<unsigned long> {static unsigned long convert(const FieldContent &f);};

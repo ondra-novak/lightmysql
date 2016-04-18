@@ -231,7 +231,7 @@ std::size_t Result::countRows() const {
 	else return mysql_num_rows(cur->resPtr);
 }
 
-StringA Result::getFieldName(std::size_t i) const {
+ConstStrA Result::getFieldName(std::size_t i) const {
 	return getFieldInfo(i)->name;
 }
 

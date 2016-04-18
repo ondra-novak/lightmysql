@@ -42,7 +42,7 @@ FieldContent Row::operator [](ConstStrA fieldName) const {
 	throw FieldNotFoundException_t(THISLOCATION,fieldName);
 }
 
-unsigned int FieldTypeConv<bool>::convert(const FieldContent& f)
+bool FieldTypeConv<bool>::convert(const FieldContent& f)
 {
 	char *endp;
 	unsigned int r = (unsigned int)strtoul(f.value,&endp,10);

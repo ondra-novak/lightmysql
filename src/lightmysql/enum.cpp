@@ -9,6 +9,8 @@
 #include <lightspeed/base/containers/stringpool.tcc>
 #include "result.h"
 #include "exception.h"
+#include "lightspeed/base/containers/map.tcc"
+
 
 namespace LightMySQL {
 
