@@ -202,8 +202,10 @@ Query &Query::field(ConstStrA val) {
 		paramBuffer.add('`');
 		for (ConstStrA::Iterator iter = val.getFwIter(); iter.hasItems(); ){
 			char f = iter.getNext();
-			if (f == '`') paramBuffer.add('\\');
-			paramBuffer.add(f);
+			if (f == '.') paramBuffer.append(ConstStrA("`.`")); else {
+				if (f == '`') paramBuffer.add('\\');
+				paramBuffer.add(f);
+			}
 		}
 		paramBuffer.add('`');
 		paramEnds.add(paramBuffer.length());
