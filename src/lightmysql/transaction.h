@@ -97,6 +97,39 @@ public:
 
 	///Executes prepared query
 	Result exec();
+
+
+	class IsolationLevelRef {
+	public:
+		Transaction &trn;
+		IConnection::Level level;
+
+		IsolationLevelRef(Transaction &trn,IConnection::Level level)
+			:trn(trn),level(level) {}
+
+		template<typename Fn>
+		IsolationLevelRef operator<<(const Fn &fn) {
+			while (trn.start(level)) try {
+				fn();
+				trn.commit();
+			} catch (ServerError_t &e) {
+				trn.except(e,THISLOCATION);
+			}
+			return *this;
+		}
+	};
+
+	///For C++11, to easily create transaction
+	template<typename Fn>
+	IsolationLevelRef operator>>(const Fn &fn) {
+		return IsolationLevelRef(*this, IConnection::defaultLevel) << fn;
+	}
+	///For C++11, to easily create transaction
+	template<typename Fn>
+	IsolationLevelRef operator>>(IConnection::Level level) {
+		return IsolationLevelRef(*this, level);
+	}
+
 protected:
 	Query& queryObj;
 	natural retryCount;
@@ -209,5 +242,8 @@ inline Ret Transaction::exec(const ProgramLocation &loc, const Obj* obj,
 }
 
 
+
 } /* namespace LightMySQL */
+
+
 #endif /* LIGHTMYSL_TRANSACTION_H_ */

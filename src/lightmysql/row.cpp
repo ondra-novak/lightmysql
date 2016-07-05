@@ -106,10 +106,19 @@ ConstStrA FieldTypeConv<ConstStrA>::convert(const FieldContent& f)
 {
 	return ConstStrA(f.value,f.length);
 }
+ConstBin FieldTypeConv<ConstBin>::convert(const FieldContent& f)
+{
+	return ConstBin(f.value,f.length);
+}
 
 StringA FieldTypeConv<StringA>::convert(const FieldContent& f)
 {
 	return StringA(ConstStrA(f.value,f.length));
+}
+
+StringB FieldTypeConv<StringB>::convert(const FieldContent& f)
+{
+	return StringB(ConstBin(f.value,f.length));
 }
 
 String FieldTypeConv<String>::convert(const FieldContent& f)
@@ -140,77 +149,6 @@ TimeStamp FieldTypeConv<TimeStamp>::convert(const FieldContent& f)
 }
 
 
-#if 0
-
-FieldContent Row::getNext() {
-	if (!hasItems())
-		LightSpeed::throwIteratorNoMoreItems(THISLOCATION,typeid(FieldContent));
-	unsigned int idx = index++;
-	return FieldContent(row[idx],lengths[idx]);
-}
-bool Row::hasItems() const {
-	return index < count;
-}
-
-template<typename T>
-Row &Row::parse(T &v, const char *fmt) {
-	unsigned int pos = index;
-	FieldContent val = getNext();
-	if (val.isNull()) throw NullFieldException_t(THISLOCATION,owner.getFieldName(pos));
-	sscanf(val.value,fmt,&v);
-	return *this;
-}
-
-
-
-Row & Row::operator >>(ConstStrA & v)
-{
-	unsigned int pos = index;
-	FieldContent val = getNext();
-	if (val.isNull()) throw NullFieldException_t(THISLOCATION,owner.getFieldName(pos));
-	v = ConstStrA(val.value, val.length);
-	return *this;
-}
-
-
-Row & Row::operator >>(signed int & v)
-{ return parse(v,"%d");}
-Row & Row::operator >>(unsigned int & v)
-{ return parse(v,"%u");}
-Row & Row::operator >>(signed short & v)
-{ return parse(v,"%hd");}
-Row & Row::operator >>(unsigned short & v)
-{ return parse(v,"%hu");}
-Row & Row::operator >>(signed long & v)
-{ return parse(v,"%ld");}
-Row & Row::operator >>(unsigned long & v)
-{ return parse(v,"%lu");}
-Row & Row::operator >>(signed long long & v)
-{ return parse(v,"%ld");}
-Row & Row::operator >>(unsigned long long & v)
-{ return parse(v,"%lu");}
-Row & Row::operator >>(float & v)
-{ return parse(v,"%f");}
-Row & Row::operator >>(double & v)
-{ return parse(v,"%lf");}
-
-
-
-
-Row &Row::operator[](int index) {
-	if ((natural)index >= count)
-		LightSpeed::throwRangeException_To(THISLOCATION,count,(natural)index);
-	this->index = (natural)index;
-	return *this;
-}
-
-
-bool Row::isNull() const {
-	if (!hasItems())
-		LightSpeed::throwIteratorNoMoreItems(THISLOCATION,typeid(FieldContent));
-	return row[index] == 0;
-}
-#endif
 
 }
 

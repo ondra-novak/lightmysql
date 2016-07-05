@@ -148,8 +148,10 @@ template<> struct FieldTypeConv<unsigned long long> {static unsigned long long c
 template<> struct FieldTypeConv<signed long long> {static signed long long convert(const FieldContent &f);};
 template<> struct FieldTypeConv<const char *> {static const char *convert(const FieldContent &f);};
 template<> struct FieldTypeConv<ConstStrA> {static ConstStrA convert(const FieldContent &f);};
+template<> struct FieldTypeConv<ConstBin> {static ConstBin convert(const FieldContent &f);};
 template<> struct FieldTypeConv<StringA> {static StringA convert(const FieldContent &f);};
 template<> struct FieldTypeConv<String> {static String convert(const FieldContent &f);};
+template<> struct FieldTypeConv<StringB> {static StringB convert(const FieldContent &f);};
 template<> struct FieldTypeConv<float> {static float convert(const FieldContent &f);};
 template<> struct FieldTypeConv<double> {static double convert(const FieldContent &f);};
 template<> struct FieldTypeConv<TimeStamp> {static TimeStamp convert(const FieldContent &f);};
