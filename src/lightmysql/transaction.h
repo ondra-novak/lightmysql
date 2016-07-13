@@ -108,7 +108,7 @@ public:
 			:trn(trn),level(level) {}
 
 		template<typename Fn>
-		IsolationLevelRef operator<<(const Fn &fn) {
+		IsolationLevelRef operator>>(const Fn &fn) {
 			while (trn.start(level)) try {
 				fn();
 				trn.commit();
@@ -125,8 +125,18 @@ public:
 		return IsolationLevelRef(*this, IConnection::defaultLevel) << fn;
 	}
 	///For C++11, to easily create transaction
+	/**
+	 * If trn is brand new transaction object, then
+	 * @code
+	 * trn(IConnection::readCommited) >> [&](){...code...};
+	 * @endcode
+	 * will run 'code' as transaction under 'readCommited' isolation level.
+	 *
+	 * @param level specify isolation level
+	 * @return object able to run transaction
+	 */
 	template<typename Fn>
-	IsolationLevelRef operator>>(IConnection::Level level) {
+	IsolationLevelRef operator()(IConnection::Level level) {
 		return IsolationLevelRef(*this, level);
 	}
 
