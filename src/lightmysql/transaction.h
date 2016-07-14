@@ -122,7 +122,7 @@ public:
 	///For C++11, to easily create transaction
 	template<typename Fn>
 	IsolationLevelRef operator>>(const Fn &fn) {
-		return IsolationLevelRef(*this, IConnection::defaultLevel) << fn;
+		return IsolationLevelRef(*this, IConnection::defaultLevel) >> fn;
 	}
 	///For C++11, to easily create transaction
 	/**
