@@ -15,7 +15,7 @@
 #include "result.h"
 namespace LightMySQL {
 
-unsigned int ShareTrnSyncPoint::ERR_SHARED_TRN_ERROR = ER_ERROR_LAST;
+unsigned int ShareTrnSyncPoint::ERR_SHARED_TRN_ERROR = 9999;
 
 ShareTrnSyncPoint::ShareTrnSyncPoint() {
 }

@@ -51,7 +51,7 @@ LightSpeed::JSON::PNode parseDateTime(LightSpeed::JSON::IFactory &factory, Const
 		if (!isoDate)
 			return factory.newValue(text);
 		else
-			return factory.newValue(parseDateTime(text).asISO8601Time());
+			return factory.newValue(StringA(text.head(10)+ConstStrA("T")+text.tail(8)+ConstStrA("Z")));
 	}
 
 	try {
