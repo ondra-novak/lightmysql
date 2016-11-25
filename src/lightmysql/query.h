@@ -88,6 +88,9 @@ public:
 	/** function escapes and adds quotes */
 	Query &arg(ConstStrW str);
 	///feed by argument
+	/** function escapes and adds quotes */
+	Query &arg(ConstBin str);
+	///feed by argument
 	/** function escapes, but will no add quotes */
 	Query &escaped(ConstStrA str);
 	///feed by argument

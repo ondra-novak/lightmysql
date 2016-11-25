@@ -124,6 +124,12 @@ Query & Query::arg(ConstStrA str)
 	return *this;
 }
 
+Query & Query::arg(ConstBin str)
+{
+	ConstStrA ss(reinterpret_cast<const char *>(str.data()),str.length());
+	return arg(ss);
+}
+
 Query &Query::arg(ConstStrW str)
 {
 	AutoArray<char,SmallAlloc<256> > buff;
