@@ -249,8 +249,34 @@ void NullFieldException_t::message(LightSpeed::ExceptionMsg &msg) const {
 	msg("Field '%1' is NULL") << fieldName.c_str();
 }
 
+Result::RangeIter::RangeIter(Result& owner, bool isend)
+	:owner(owner),isend(isend) {}
+
+bool Result::RangeIter::operator ==(const RangeIter& other) const {
+	return &owner == &other.owner && isend == other.isend;
 }
 
+bool Result::RangeIter::operator !=(const RangeIter& other) const {
+	return !operator==(other);
+}
 
+Row Result::RangeIter::operator *() const {
+	return Row(owner,owner.readyRow,mysql_fetch_lengths(owner.cur->resPtr),mysql_num_fields(owner.cur->resPtr));
+}
 
+Result::RangeIter& Result::RangeIter::operator ++() {
+	owner.loadNextRow();
+	if (owner.readyRow == 0) isend = true;
+	return *this;
+}
 
+Result::RangeIter Result::begin() {
+	rewind();
+	return RangeIter(*this,!hasItems());
+}
+
+Result::RangeIter Result::end() {
+	return RangeIter(*this,true);
+}
+
+}

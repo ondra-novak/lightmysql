@@ -221,6 +221,32 @@ public:
 	 */
 	const MYSQL_FIELD *getFieldInfo(natural i) const;
 
+	class RangeIter {
+	public:
+
+		RangeIter(Result &owner,  bool isend);
+		bool operator==(const RangeIter &other) const;
+		bool operator!=(const RangeIter &other) const;
+		Row operator *() const;
+		RangeIter &operator++();
+
+	protected:
+		Result &owner;
+		bool isend;
+	};
+
+	///Allows to iterate through to result
+	/**
+	 * @return return iterator initialized to the first item
+	 * @note for compatibility reason, it is allowed to have only one iterator active at time (it excludes
+	 * iterator to the end). The function begin() also rewinds the result to the begining
+	 *
+	 */
+	RangeIter begin();
+	///Returns iterator to the end
+	/** You cannot dereference the iterator, it just marks end of result */
+	RangeIter end();
+
 
 protected:
 	///protected ctor
