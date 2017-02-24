@@ -109,11 +109,15 @@ public:
 
 		template<typename Fn>
 		IsolationLevelRef operator>>(const Fn &fn) {
-			while (trn.start(level)) try {
+			if (trn.state == stStarted) {
 				fn();
-				trn.commit();
-			} catch (ServerError_t &e) {
-				trn.except(e,THISLOCATION);
+			} else {
+				while (trn.start(level)) try {
+					fn();
+					trn.commit();
+				} catch (ServerError_t &e) {
+					trn.except(e,THISLOCATION);
+				}
 			}
 			return *this;
 		}
