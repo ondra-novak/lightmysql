@@ -8,9 +8,6 @@
 #ifndef LIGHTMYSQL_JSON_H_023540399701
 #define LIGHTMYSQL_JSON_H_023540399701
 
-#include <lightspeed/base/containers/autoArray.h>
-#include <lightspeed/base/memory/smallAlloc.h>
-#include <lightspeed/utils/json.h>
 
 #include "result.h"
 namespace LightMySQL {

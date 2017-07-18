@@ -15,10 +15,6 @@
 #include "connection.h"
 #include "result.h"
 #include "mysql/errmsg.h"
-#include <lightspeed/base/containers/autoArray.tcc>
-#include <lightspeed/base/memory/smallAlloc.h>
-
-#include "threadHook.h"
 namespace LightMySQL {
 
 static ThreadHook thrhook;

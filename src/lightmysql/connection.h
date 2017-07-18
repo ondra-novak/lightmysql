@@ -14,12 +14,11 @@
 
 #ifndef MYSQL_CONNECTION_H_
 #define MYSQL_CONNECTION_H_
+#include <imtjson/string.h>
 
 #pragma once
 
 #include <mysql/mysql.h>
-#include <lightspeed/base/memory/sharedResource.h>
-#include <lightspeed/base/containers/string.h>
 
 #include "exception.h"
 #include "logging.h"
@@ -27,17 +26,18 @@
 
 namespace LightMySQL {
 
-using namespace LightSpeed;
+using json::String;
+using json::StrViewA;
 
 ///Authorization
 struct AuthInfo_t {
 	///username
-	StringA username;
-	///password
-	StringA password;
+	String username;
+	///pasword
+	String password;
 
 	AuthInfo_t() {}
-	AuthInfo_t(const StringA username,const StringA password)
+	AuthInfo_t(const String username,const String password)
 		:username(username),password(password) {}
 
 };
@@ -57,40 +57,30 @@ struct ConnectParams {
 	};
 
 	///hostname - if empty, socket is used
-	StringA host;
+	String host;
 	///portnumber
-	natural port;
+	std::uintptr_t port;
 	///Authorization informations
 	AuthInfo_t authInfo;
 	///database name
-	StringA dbname;
+	String dbname;
 	///linux socket
-	StringA socket;
+	String socket;
 	///defines lifetime of the connection
 	/** @see Lifetime */
 	Lifetime lifetime;
 
 	ConnectParams():port(3306),lifetime(defaultLifetime) {}
-	ConnectParams(ConstStrA host, natural port, const AuthInfo_t &authInfo,
-			ConstStrA dbName, ConstStrA socket = ConstStrA(),
+	ConnectParams(StrViewA host, std::uintptr_t port, const AuthInfo_t &authInfo,
+			StrViewA dbName, StrViewA socket = StrViewA(),
 			Lifetime lifetime = defaultLifetime)
 		:host(host),port(port),authInfo(authInfo),dbname(dbName),socket(socket),lifetime(lifetime) {}
-	ConnectParams(const ConnectParams &other)
-		:host(other.host.getMT())
-		,port(other.port)
-		,authInfo(other.authInfo.username.getMT(),other.authInfo.password.getMT())
-		,dbname(other.dbname.getMT())
-		,socket(other.socket.getMT())
-		,lifetime(other.lifetime)
-		{
-
-	}
 };
 
 class Result;
 
 ///MySQL connection. First object that must be created to communicate with the database
-class Connection: public LightSpeed::SharedResource, public IConnection {
+class Connection: public IConnection {
 public:
 
 	///Constructor - initializes internal structures
@@ -113,7 +103,7 @@ public:
 	///Retrieves last error number
 	unsigned int getLastError() const;
 	///Retrieves last error message
-	StringA getLastErrorMsg() const;
+	String getLastErrorMsg() const;
 
 	///Sets connection options
 	/**
@@ -134,7 +124,7 @@ public:
 	 *
 	 * @see Query
 	 */
-	StringA escapeString(ConstStrA str);
+	String escapeString(StrViewA str);
 
 	///Executes query
 	/**
@@ -143,13 +133,11 @@ public:
 	 *  Consider to use Query object to build-up queries
 	 * @return result of query
 	 */
-	Result executeQuery(ConstStrA query);
+	Result executeQuery(StrViewA query);
 	///Handles any MySQL error throwing appropriate exception
 	/**
-	 * @param e location in the program, where error has been retrieved.
-	 * Use THISLOCATION
 	 */
-	void handleError(const ProgramLocation &e);
+	void handleError();
 
 	///Checks, whether object is connected
 	/**
@@ -184,12 +172,12 @@ public:
 	///Rollbacks transaction
 	void rollbackTransaction();
 
-	natural getConnectionId();
+	std::uintptr_t getConnectionId();
 
-	void killConnection(natural connectionId);
+	void killConnection(std::uintptr_t connectionId);
 
 
-	virtual void logString(ConstStrA str, bool error);
+	virtual void logString(StrViewA str, bool error);
 	virtual bool isLogEnabled() const;
 
 

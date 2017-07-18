@@ -16,10 +16,6 @@
 #include <stdio.h>
 #include <sstream>
 #include "result.h"
-#include <lightspeed/base/containers/autoArray.tcc>
-#include "lightspeed/base/memory/smallAlloc.h"
-#include <lightspeed/base/streams/utf.h>
-#include <lightspeed/base/streams/utf.tcc>
 
 using LightSpeed::SmallAlloc;
 

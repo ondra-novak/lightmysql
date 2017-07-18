@@ -14,8 +14,6 @@
 
 #include "result.h"
 #include <string.h>
-#include <lightspeed/base/exceptions/throws.tcc>
-//#include <lightspeed/base/text/textOut.tcc>
 #include <memory>
 
 namespace LightMySQL {

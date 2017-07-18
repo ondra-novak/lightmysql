@@ -9,7 +9,6 @@
 #include "exception.h"
 #include "connection.h"
 #include "result.h"
-#include "lightspeed/mt/thread.h"
 #include <mysql/mysqld_error.h>
 
 /*

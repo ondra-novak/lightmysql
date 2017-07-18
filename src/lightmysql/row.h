@@ -4,7 +4,6 @@
 #pragma once
 
 #include "connection.h"
-#include <lightspeed/base/timestamp.h>
 
 namespace LightMySQL {
 
@@ -28,7 +27,7 @@ class FieldContent {
 	///Length of contnet in characters, not including terminating zero
 	unsigned long length;
 
-	natural pos;
+	std::uintptr_t pos;
 
 	const Row &owner;
 
@@ -42,7 +41,7 @@ public:
 	 * @param value pointer to content
 	 * @param length length of content in bytes
 	 */
-	FieldContent(const char *value,unsigned long length, natural pos, const Row &owner)
+	FieldContent(const char *value,unsigned long length, std::uintptr_t pos, const Row &owner)
 		:value(value),length(length),pos(pos),owner(owner) {}
 
 	///Tests, whether object is NULL
@@ -63,7 +62,7 @@ public:
 
 	const Row &getRow() const {return owner;}
 
-	natural getPos() const {return pos;}
+	std::uintptr_t getPos() const {return pos;}
 
 	bool empty() const {return length == 0;}
 };
@@ -102,13 +101,13 @@ public:
 	 * 	pointer to specified field. Return value allows to
 	 *  use cast operator to retrieve value of the field
 	 */
-	FieldContent operator[](ConstStrA fieldName) const;
+	FieldContent operator[](StrViewA fieldName) const;
 
 	///Retrieves count of fields in the result
 	/**
 	 * @return count of fields
 	 */
-	natural size() const {return count;}
+	std::uintptr_t size() const {return count;}
 
 	///Retrieves owner of this row.
 	/**
@@ -127,7 +126,7 @@ protected:
 	///array of lengths
 	unsigned long *lengths;
 	///count of fields
-	natural count;
+	std::uintptr_t count;
 
 	///Constructor - cannot be called directly
 	Row(Result &owner, MYSQL_ROW row, unsigned long *lengths,unsigned int count)
@@ -147,14 +146,10 @@ template<> struct FieldTypeConv<signed long> {static signed long convert(const F
 template<> struct FieldTypeConv<unsigned long long> {static unsigned long long convert(const FieldContent &f);};
 template<> struct FieldTypeConv<signed long long> {static signed long long convert(const FieldContent &f);};
 template<> struct FieldTypeConv<const char *> {static const char *convert(const FieldContent &f);};
-template<> struct FieldTypeConv<ConstStrA> {static ConstStrA convert(const FieldContent &f);};
-template<> struct FieldTypeConv<ConstBin> {static ConstBin convert(const FieldContent &f);};
-template<> struct FieldTypeConv<StringA> {static StringA convert(const FieldContent &f);};
-template<> struct FieldTypeConv<String> {static String convert(const FieldContent &f);};
-template<> struct FieldTypeConv<StringB> {static StringB convert(const FieldContent &f);};
+template<> struct FieldTypeConv<StrViewA> {static StrViewA convert(const FieldContent &f);};
+template<> struct FieldTypeConv<BinaryView> {static BinaryView convert(const FieldContent &f);};
 template<> struct FieldTypeConv<float> {static float convert(const FieldContent &f);};
 template<> struct FieldTypeConv<double> {static double convert(const FieldContent &f);};
-template<> struct FieldTypeConv<TimeStamp> {static TimeStamp convert(const FieldContent &f);};
 
 
 template<typename T>

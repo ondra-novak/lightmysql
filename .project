@@ -3,7 +3,6 @@
 	<name>lightmysql</name>
 	<comment></comment>
 	<projects>
-		<project>lightspeed-12.10</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

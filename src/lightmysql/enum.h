@@ -8,8 +8,6 @@
 #ifndef LIGHTMYSQL_ENUM_H_
 #define LIGHTMYSQL_ENUM_H_
 
-#include <lightspeed/base/containers/stringpool.h>
-#include <lightspeed/base/containers/map.h>
 #include "transaction.h"
 
 namespace LightMySQL {

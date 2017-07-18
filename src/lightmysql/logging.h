@@ -15,29 +15,30 @@
 
 #ifndef MYSQL_LOGGING_H_
 #define MYSQL_LOGGING_H_
-#include "lightspeed/base/containers/constStr.h"
+#include <imtjson/string.h>
 
-using LightSpeed::ConstStrA;
 
 
 #pragma once
 
 namespace LightMySQL {
 
+using json::StrViewA;
+
 	///Interface to handle logging queries and results
 	class IDebugLog {
 	public:
 
 		///Logs query before it processed
-		virtual void onQueryExec(ConstStrA queryText) = 0;
+		virtual void onQueryExec(StrViewA queryText) = 0;
 		///Logs error after query is unsucessfully processed
-		virtual void onQueryError(ConstStrA errorText) = 0;
+		virtual void onQueryError(StrViewA errorText) = 0;
 		///Logs brief information about processed query
 		virtual void onQueryResult(my_ulonglong rows, my_ulonglong cols, my_ulonglong affected, my_ulonglong lastId, my_ulonglong warn) = 0;
 		///Logs brief information about processed query
-		virtual void onQueryInfo(ConstStrA info) = 0;
+		virtual void onQueryInfo(StrViewA info) = 0;
 		///Logs information about server connect state change
-		virtual void serverConnect(ConstStrA host, int port, ConstStrA dbname) = 0;
+		virtual void serverConnect(StrViewA host, int port, StrViewA dbname) = 0;
 		///Logs information about server connect state change
 		virtual void serverDisconnect() = 0;
 

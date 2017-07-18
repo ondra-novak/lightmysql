@@ -8,7 +8,7 @@
 #ifndef LIGHTMYSL_TRANSACTION_H_
 #define LIGHTMYSL_TRANSACTION_H_
 #include "query.h"
-#include "lightspeed/base/containers/constStr.h"
+
 
 #pragma once
 

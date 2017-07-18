@@ -15,24 +15,32 @@
 
 #ifndef MYSQL_EXCEPTIONS_H_
 #define MYSQL_EXCEPTIONS_H_
+#include <exception>
+#include <string>
 
-#include <lightspeed/base/exceptions/exception.h>
-#include <lightspeed/base/containers/string.h>
-#include "lightspeed/base/debug/programlocation.h"
-
+#include <imtjson/string.h>
 
 namespace LightMySQL {
 
+	using namespace json;
 
-using LightSpeed::StringA;
-using LightSpeed::ProgramLocation;
 
 	///Common exception object. Catch it to catch all MySQL errors
-	class Exception_t: public virtual LightSpeed::Exception {
+	class Exception_t: public virtual std::exception {
 	public:
-		Exception_t(const ProgramLocation &loc) {
-			this->setLocation(loc);
+
+		virtual const char *what() const throw() override {
+			if (msgdata.empty()) {
+				msgdata = getMessage();
+			}
+			return msgdata.c_str();
 		}
+
+		virtual ~Exception_t() throw() {}
+
+		virtual String getMessage() const throw() = 0;
+	private:
+		mutable String msgdata;
 	};
 
 
@@ -46,7 +54,6 @@ using LightSpeed::ProgramLocation;
 	 */
 	class ServerError_t: public Exception_t{
 	public:
-		LIGHTSPEED_EXCEPTIONFINAL;
 
 		enum GeneralError {
 			///error - duplicate keys
@@ -63,14 +70,13 @@ using LightSpeed::ProgramLocation;
 		 * @param errnr error number reported by MySQL server
 		 * @param errText error message reported by MySQL server
 		 */
-		ServerError_t(const ProgramLocation &loc,
-				unsigned int errnr, const StringA &errText)
-			:Exception_t(loc),errnr(errnr),errText(errText) {}
+		ServerError_t(unsigned int errnr, const String &errText)
+			:errnr(errnr),errText(errText) {}
 
 		///Retrieves error number reported by MySQL server
 		unsigned int getErrno() const {return errnr;}
 		///Retrieves error message reported by MySQL server
-		const StringA &getErrorMsg() const {return errText;}
+		const String &getErrorMsg() const {return errText;}
 		///dtor
 		~ServerError_t() throw () {}
 
@@ -85,10 +91,10 @@ using LightSpeed::ProgramLocation;
 
 	protected:
 		unsigned int errnr;
-		StringA errText;
+		String errText;
 
-		void message(LightSpeed::ExceptionMsg &msg) const {
-			msg("MySQL server error: %1 %2") << errnr << errText.c_str();
+		String getMessage() const throw() override {
+			return String({"MySQL server error: ", std::to_string(errnr), " ", errText});
 		}
 	};
 
@@ -99,29 +105,26 @@ using LightSpeed::ProgramLocation;
 	 */
 	class UnopenedTransactionException_t: public Exception_t {
 	public:
-		LIGHTSPEED_EXCEPTIONFINAL;
 
-		UnopenedTransactionException_t(const ProgramLocation &loc)
-			:Exception_t(loc) {}
 	protected:
-		void message(LightSpeed::ExceptionMsg &msg) const;
+		String getMessage() const throw() override {
+			return "Transaction is not opened (MySQL)";
+		}
 	};
 
 	class EnumException: public Exception_t {
 	public:
-		LIGHTSPEED_EXCEPTIONFINAL;
 
-		EnumException(const ProgramLocation &loc, LightSpeed::ConstStrA table,
-				LightSpeed::ConstStrA field, LightSpeed::ConstStrA errorMsg)
-			:Exception_t(loc), table(table), field(field), errorMsg(errorMsg) {}
+		EnumException(StrViewA table,StrViewA field, StrViewA errorMsg)
+			:table(table), field(field), errorMsg(errorMsg) {}
 
 
 		~EnumException() throw() {}
 
 	public:
-		LightSpeed::StringA table, field, errorMsg;
-		void message(LightSpeed::ExceptionMsg &msg) const {
-			msg("%1(%2) %3") << table << field << errorMsg;
+		String table, field, errorMsg;
+		String getMessage() const throw() override {
+			return String({table,"(",field,") ",errorMsg});
 		}
 	};
 }

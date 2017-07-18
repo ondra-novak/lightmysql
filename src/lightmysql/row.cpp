@@ -14,8 +14,6 @@
 
 #include "row.h"
 #include "result.h"
-#include <lightspeed/base/exceptions/throws.tcc>
-#include <lightspeed/base/exceptions/invalidNumberFormat.h>
 #include <string.h>
 //#include <lightspeed/base/streams/text.tcc>
 

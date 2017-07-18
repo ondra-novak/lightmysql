@@ -20,13 +20,16 @@
 #include "iconnection.h"
 #include <vector>
 #include "exception.h"
-#include <lightspeed/base/containers/autoArray.h>
-#include "lightspeed/base/containers/constStr.h"
 
 
 namespace LightMySQL {
 
-using namespace LightSpeed;
+
+using json::StringView;
+using json::StrViewA;
+using json::StrViewW;
+using json::BinaryView;
+using json::String;
 
 class Result;
 class SubQuery;
@@ -70,7 +73,7 @@ public:
 	 * @return reference to this object allowing to create chains
 	 * @note setting query pattern removes arguments
 	 */
-	Query &operator()(ConstStrA queryText);
+	Query &operator()(StrViewA queryText);
 
 
 	///Executes the query
@@ -83,19 +86,19 @@ public:
 
 	///feed by argument
 	/** function escapes and adds quotes */
-	Query &arg(ConstStrA str);
+	Query &arg(StrViewA str);
 	///feed by argument
 	/** function escapes and adds quotes */
-	Query &arg(ConstStrW str);
+	Query &arg(StrViewW str);
 	///feed by argument
 	/** function escapes and adds quotes */
-	Query &arg(ConstBin str);
+	Query &arg(BinaryView str);
 	///feed by argument
 	/** function escapes, but will no add quotes */
-	Query &escaped(ConstStrA str);
+	Query &escaped(StrViewA str);
 	///feed by argument
 	/** function escapes, but will no add quotes */
-	Query &escaped(ConstStrW str);
+	Query &escaped(StrViewW str);
 	///feed by argument
 	Query &arg(int i);
 	///feed by argument
@@ -114,27 +117,27 @@ public:
 	template<typename H, typename T>
 	Query &arg(const std::pair<H,T> &val);
 	///feed by name of field
-	Query &field(ConstStrA field);
-	Query &field(ConstStrA table, ConstStrA val);
-	Query &field(ConstStrA database, ConstStrA table, ConstStrA val);
-	Query &field(ConstStrW field);
-	Query &field(ConstStrW table, ConstStrW val);
-	Query &field(ConstStrW database, ConstStrW table, ConstStrA val);
+	Query &field(StrViewA field);
+	Query &field(StrViewA table, StrViewA val);
+	Query &field(StrViewA database, StrViewA table, StrViewA val);
+	Query &field(StrViewW field);
+	Query &field(StrViewW table, StrViewW val);
+	Query &field(StrViewW database, StrViewW table, StrViewA val);
 	Query &null();
 	Query &now();
 	Query &curDate();
 	///feed by array separated by ,
 	/** Useful to construct x in [...] condition */
 	template<typename T>
-	Query &arg(ConstStringT<T> arr);
+	Query &arg(StringView<T> arr);
 
 	///inserts inline table created as series simple selects joined with union.
 	/** do not forget to alias such table. */
 	template<typename T>
-	Query &inline_table(ConstStringT<T> arr,ConstStrA fieldName, ConstStrA colation);
+	Query &inline_table(StringView<T> arr,StrViewA fieldName, StrViewA colation);
 
 	template<typename T>
-	Query &arg(ConstStringT<T> arr, ConstStrA separator) {
+	Query &arg(StringView<T> arr, StrViewA separator) {
 		return arg(arr,separator,&Query::arg);
 	}
 
@@ -146,7 +149,7 @@ public:
 	 * @return this object
 	 */
 	template<typename T, typename Fn>
-	Query &arg(ConstStringT<T> arr, ConstStrA separator, Fn fn);
+	Query &arg(StringView<T> arr, StrViewA separator, Fn fn);
 
 
 	///feed by raw string.
@@ -154,7 +157,7 @@ public:
 	 * @param text raw string
 	 * @note DON'T USE, IF YOU DON'T REALLY KNOW, WHAT ARE YOU DOING
 	 */
-	Query &raw(ConstStrA text);
+	Query &raw(StrViewA text);
 
 	///feed by result of sub-query
 	Query &arg(const Query &other) {return raw(other.build());}
@@ -173,27 +176,27 @@ public:
 	 * @return this object to allow chaining
 	 * @note to start new query, use operator() to reset append state.
 	 */
-	Query &append(ConstStrA queryText);
+	Query &append(StrViewA queryText);
 
 
 	///Builds query, but will not execute it
 	/**
 	 * @return built query
 	 */
-	ConstStrA build() const;
+	StrViewA build() const;
 
 	///Retrieves executed query
 	/**
 	 * @return returns query which has been executed. Function also
 	 *  returns query that has been built by last build() function
 	 */
-	ConstStrA getExecutedQuery() const {return queryBuffer;}
+	StrViewA getExecutedQuery() const {return queryBuffer;}
 
 	///Returns query pattern
 	/**
 	 * @return pattern
 	 */
-	ConstStrA  getQueryText() const {return queryText;}
+	StrViewA  getQueryText() const {return queryText;}
 
 
 	virtual ~Query() {}
@@ -203,71 +206,71 @@ public:
 
 	//builder commands
 
-	Query &INSERT(ConstStrA pattern);
-	Query &INSERT_IGNORE(ConstStrA pattern);
+	Query &INSERT(StrViewA pattern);
+	Query &INSERT_IGNORE(StrViewA pattern);
 
-	Query &SET(ConstStrA field, ConstStrA expr);
-	Query &SET(ConstStrA field);
+	Query &SET(StrViewA field, StrViewA expr);
+	Query &SET(StrViewA field);
 
 
-	Query &UPDATE(ConstStrA pattern);
+	Query &UPDATE(StrViewA pattern);
 
-	Query &REPLACE(ConstStrA pattern);
+	Query &REPLACE(StrViewA pattern);
 
-	Query &DELETE(ConstStrA pattern);
+	Query &DELETE(StrViewA pattern);
 	Query &DELETE();
 
 
-	Query &SELECT(ConstStrA pattern, bool calcfoundrows = false);
-	Query &SELECT_DISTINCT(ConstStrA pattern, bool calcfoundrows = false);
-	Query &SELECT_DISTINCTROW(ConstStrA pattern, bool calcfoundrows = false);
+	Query &SELECT(StrViewA pattern, bool calcfoundrows = false);
+	Query &SELECT_DISTINCT(StrViewA pattern, bool calcfoundrows = false);
+	Query &SELECT_DISTINCTROW(StrViewA pattern, bool calcfoundrows = false);
 
-	Query &FROM(ConstStrA tableName);
-	Query &FROM(ConstStrA tableName, ConstStrA asTable);
-	Query &FROM_pat(ConstStrA pattern);
+	Query &FROM(StrViewA tableName);
+	Query &FROM(StrViewA tableName, StrViewA asTable);
+	Query &FROM_pat(StrViewA pattern);
 	///FROM subquery
-	SubQuery FROM_SUB(ConstStrA subqueryName);
+	SubQuery FROM_SUB(StrViewA subqueryName);
 	///FROM subquery
-	SubQuery JOIN_SUB(ConstStrA subqueryName);
+	SubQuery JOIN_SUB(StrViewA subqueryName);
 	///FROM subquery
-	SubQuery LEFT_JOIN_SUB(ConstStrA subqueryName);
+	SubQuery LEFT_JOIN_SUB(StrViewA subqueryName);
 
-	Query &JOIN(ConstStrA table);
-	Query &JOIN(ConstStrA table, ConstStrA asTable);
-	Query &JOIN_pat(ConstStrA pattern);
+	Query &JOIN(StrViewA table);
+	Query &JOIN(StrViewA table, StrViewA asTable);
+	Query &JOIN_pat(StrViewA pattern);
 
-	Query &LEFT_JOIN(ConstStrA table);
-	Query &LEFT_JOIN(ConstStrA table, ConstStrA asTable);
-	Query &LEFT_JOIN_pat(ConstStrA pattern);
+	Query &LEFT_JOIN(StrViewA table);
+	Query &LEFT_JOIN(StrViewA table, StrViewA asTable);
+	Query &LEFT_JOIN_pat(StrViewA pattern);
 
-	Query &ON(ConstStrA pattern);
-	Query &ON(ConstStrA table1, ConstStrA field1,ConstStrA table2, ConstStrA field2); ///<-- ON field=field: ON().field(aa).field(bb)
+	Query &ON(StrViewA pattern);
+	Query &ON(StrViewA table1, StrViewA field1,StrViewA table2, StrViewA field2); ///<-- ON field=field: ON().field(aa).field(bb)
 
-	Query &WHERE(ConstStrA pattern);
+	Query &WHERE(StrViewA pattern);
 
-	Query &ORDERBY_pat(ConstStrA pattern);
+	Query &ORDERBY_pat(StrViewA pattern);
 
-	Query &ORDERBY(ConstStrA field, bool descending);
-	Query &ORDERBY(ConstStrA table, ConstStrA field, bool descending);
+	Query &ORDERBY(StrViewA field, bool descending);
+	Query &ORDERBY(StrViewA table, StrViewA field, bool descending);
 
-	Query &GROUPBY(ConstStrA field);
-	Query &GROUPBY(ConstStrA table, ConstStrA field);
-	Query &GROUPBY_pat(ConstStrA pattern);
+	Query &GROUPBY(StrViewA field);
+	Query &GROUPBY(StrViewA table, StrViewA field);
+	Query &GROUPBY_pat(StrViewA pattern);
 
-	Query &HAVING(ConstStrA pattern);
+	Query &HAVING(StrViewA pattern);
 
-	Query &ON_DUPLICATE_KEY_UPDATE(ConstStrA field, ConstStrA expr);
-	Query &ON_DUPLICATE_KEY_UPDATE(ConstStrA field);
+	Query &ON_DUPLICATE_KEY_UPDATE(StrViewA field, StrViewA expr);
+	Query &ON_DUPLICATE_KEY_UPDATE(StrViewA field);
 	Query &ON_DUPLICATE_KEY_UPDATE();
 
-	Query &AND(ConstStrA pattern);
+	Query &AND(StrViewA pattern);
 
-	Query &OR(ConstStrA pattern);
+	Query &OR(StrViewA pattern);
 
-	Query &LIMIT(natural count);
-	Query &LIMIT(natural offset,natural count);
+	Query &LIMIT(unsigned int count);
+	Query &LIMIT(unsigned int offset,unsigned int count);
 
-	Query &operator,(ConstStrA pattern);
+	Query &operator,(StrViewA pattern);
 
 	///end of query - append ;
 	/** if there is subquery, also leaves all subqueries */
@@ -287,9 +290,9 @@ public:
 	Query &FOR_UPDATE();
 	Query &LOCK_IN_SHARE_MODE();
 
-	Query &VALUES(ConstStrA pattern);
+	Query &VALUES(StrViewA pattern);
 
-	CreateTableDef CREATE_TEMPORARY_TABLE(ConstStrA tableName);
+	CreateTableDef CREATE_TEMPORARY_TABLE(StrViewA tableName);
 
 
 	///Depends on first argument, function supplies specified value or NULL
@@ -310,26 +313,26 @@ protected:
 	///Connection
 	IConnection &conn;
 	///query pattern
-	AutoArray<char> queryText;
+	std::vector<char> queryText;
 	///buffer contains parameters
 	/**
 	 * It used linear buffer to allow re-using allocated memory while object
 	 * is used multiple-times.
 	 */
-	AutoArray<char> paramBuffer;
+	std::vector<char> paramBuffer;
 	///contains last built query
-	mutable AutoArray<char>  queryBuffer;
+	mutable std::vector<char>  queryBuffer;
 	///contains indices into paramBuffer where each parameter ends
-	AutoArray<std::size_t> paramEnds;
+	std::vector<std::size_t> paramEnds;
 
 	std::size_t commitPos;
 
 	Query &appendArg() {
-		paramEnds.resize(paramEnds.length()-1);
+		paramEnds.resize(paramEnds.size()-1);
 		return *this;
 	}
 	Query &finishArg() {
-		paramEnds.add(paramBuffer.length());
+		paramEnds.push_back(paramBuffer.size());
 		return *this;
 	}
 
@@ -345,22 +348,22 @@ protected:
 	bool executed;
 	int pairlevel;
 
-	bool beginCommand(CmdType cmd, ConstStrA cmdName);
-	bool beginCommand(CmdType cmd, ConstStrA cmdName, ConstStrA separator);
-	void appendFieldName(ConstStrA fieldName);
-	void appendFieldName(ConstStrA fieldName, ConstStrA asName);
+	bool beginCommand(CmdType cmd, StrViewA cmdName);
+	bool beginCommand(CmdType cmd, StrViewA cmdName, StrViewA separator);
+	void appendFieldName(StrViewA fieldName);
+	void appendFieldName(StrViewA fieldName, StrViewA asName);
 
 
 };
 
 template<typename T>
-Query &Query::arg(ConstStringT<T> arr) {
+Query &Query::arg(StringView<T> arr) {
 	if (arr.length() > 0) {
-		typename ConstStringT<T>::Iterator iter = arr.getFwIter();
+		typename StringView<T>::Iterator iter = arr.getFwIter();
 		this->arg(iter.getNext());
 		while (iter.hasItems()) {
 			appendArg();
-			paramBuffer.add(',');
+			paramBuffer.push_back(',');
 			this->arg(iter.getNext());
 		}
 	} else {
@@ -369,13 +372,15 @@ Query &Query::arg(ConstStringT<T> arr) {
 	return *this;
 }
 template<typename T, typename Fn>
-	Query &Query::arg(ConstStringT<T> arr, ConstStrA separator, Fn fn) {
+	Query &Query::arg(StringView<T> arr, StrViewA separator, Fn fn) {
 	if (arr.length() > 0) {
-		typename ConstStringT<T>::Iterator iter = arr.getFwIter();
+		typename StringView<T>::Iterator iter = arr.getFwIter();
 		arg(fn(iter.getNext()));
 		while (iter.hasItems()) {
 			appendArg();
-			paramBuffer.append(separator);
+			paramBuffer.reserve(paramBuffer.size()+separator.length);
+			for (auto &&c : separator)
+				paramBuffer.push_back(c);
 			arg(fn(iter.getNext()));
 		}
 	} else {
@@ -385,9 +390,9 @@ return *this;
 }
 
 template<typename T>
-Query &Query::inline_table(ConstStringT<T> arr, ConstStrA fieldName, ConstStrA colation) {
+Query &Query::inline_table(StringView<T> arr, StrViewA fieldName, StrViewA colation) {
 	if (arr.length() > 0) {
-		typename ConstStringT<T>::Iterator iter = arr.getFwIter();
+		typename StringView<T>::Iterator iter = arr.getFwIter();
 		this->raw("SELECT ").appendArg().arg(iter.getNext()).appendArg().raw(" COLLATE ")
 				.appendArg().raw(colation).appendArg().raw(" AS ")
 				.appendArg().field(fieldName);
@@ -407,17 +412,17 @@ Query &Query::inline_table(ConstStringT<T> arr, ConstStrA fieldName, ConstStrA c
 template<typename H, typename T>
 Query &Query::arg(const std::pair<H,T> &val) {
 	if (pairlevel == 0) {
-		paramBuffer.add('(');
+		paramBuffer.push_back('(');
 	}
 	pairlevel++;
 	arg(val.first);
 	appendArg();
-	paramBuffer.add(',');
+	paramBuffer.push_back(',');
 	arg(val.second);
 	pairlevel--;
 	if (pairlevel == 0) {
 		appendArg();
-		paramBuffer.add(')');
+		paramBuffer.push_back(')');
 		finishArg();
 	}
 	return *this;
@@ -439,24 +444,23 @@ public:
 	 * @param query query pattern
 	 * @param pos index of which argument is not defined
 	 */
-	UnassignedQueryParameterException_t(const ProgramLocation &loc,
-			const StringA query, std::size_t pos)
-		:Exception_t(loc),query(query),pos(pos) {}
+	UnassignedQueryParameterException_t(
+			const String query, std::size_t pos)
+		:query(query),pos(pos) {}
 
 	///dtor
 	virtual ~UnassignedQueryParameterException_t() throw() {}
-	LIGHTSPEED_EXCEPTIONFINAL;
 
 	///Retrieves the query pattern
-	const StringA &getQuery() const {return query;}
+	const String &getQuery() const {return query;}
 	///Retrieves the position
 	std::size_t getParamPos() const {return pos;}
 
 protected:
-	StringA query;
+	String query;
 	std::size_t pos;
 
-	void message(LightSpeed::ExceptionMsg &msg) const;
+	String getMessage() const throw() override;
 };
 
 ///Temporary object created during building a query. It introduces braces into query. see Query::sub()
@@ -467,7 +471,7 @@ public:
 	///initializes subquery with suffix (FROM (subquery) name
 	/** Note suffix string MUST exists when subquery is leaved
 	 */
-	SubQuery(Query &q, ConstStrA suffix);
+	SubQuery(Query &q, StrViewA suffix);
 	///leaves subquery, if it is not leaved yet
 	~SubQuery();
 	///executes query ending all subqueries
@@ -483,7 +487,7 @@ public:
 
 protected:
 	Query &parent;
-	ConstStrA suffix;
+	StrViewA suffix;
 	mutable bool active;
 
 };
@@ -497,53 +501,53 @@ class CreateTableDef: public SubQuery {
 public:
 	CreateTableDef(Query &q);
 
-	CreateTableDef &BIT(ConstStrA name);
-	CreateTableDef &TINYINT(ConstStrA name);
-	CreateTableDef &SMALLINT(ConstStrA name);
-	CreateTableDef &MEDIUMINT(ConstStrA name);
-	CreateTableDef &INT(ConstStrA name);
-	CreateTableDef &BIGINT(ConstStrA name);
-	CreateTableDef &REAL(ConstStrA name);
-	CreateTableDef &DOUBLE(ConstStrA name);
-	CreateTableDef &FLOAT(ConstStrA name);
-	CreateTableDef &DECIMAL(ConstStrA name, natural length, natural decimals);
-	CreateTableDef &NUMERIC(ConstStrA name, natural length, natural decimals);
-	CreateTableDef &UNSIGNED_BIT(ConstStrA name);
-	CreateTableDef &UNSIGNED_TINYINT(ConstStrA name);
-	CreateTableDef &UNSIGNED_SMALLINT(ConstStrA name);
-	CreateTableDef &UNSIGNED_MEDIUMINT(ConstStrA name);
-	CreateTableDef &UNSIGNED_INT(ConstStrA name);
-	CreateTableDef &UNSIGNED_BIGINT(ConstStrA name);
-	CreateTableDef &UNSIGNED_REAL(ConstStrA name);
-	CreateTableDef &UNSIGNED_DOUBLE(ConstStrA name);
-	CreateTableDef &UNSIGNED_FLOAT(ConstStrA name);
-	CreateTableDef &UNSIGNED_DECIMAL(ConstStrA name, natural length, natural decimals);
-	CreateTableDef &UNSIGNED_NUMERIC(ConstStrA name, natural length, natural decimals);
-	CreateTableDef &DATE(ConstStrA name);
-	CreateTableDef &TIME(ConstStrA name);
-	CreateTableDef &TIMESTAMP(ConstStrA name);
-	CreateTableDef &DATETIME(ConstStrA name);
-	CreateTableDef &YEAR(ConstStrA name);
-	CreateTableDef &CHAR(ConstStrA name, natural length);
-	CreateTableDef &VARCHAR(ConstStrA name, natural length);
-	CreateTableDef &BINARY(ConstStrA name, natural length);
-	CreateTableDef &VARBINARY(ConstStrA name, natural length);
-	CreateTableDef &TINYBLOB(ConstStrA name);
-	CreateTableDef &BLOB(ConstStrA name);
-	CreateTableDef &MEDIUMBLOB(ConstStrA name);
-	CreateTableDef &LONGBLOB(ConstStrA name);
-	CreateTableDef &TINYTEXT(ConstStrA name);
-	CreateTableDef &TEXT(ConstStrA name);
-	CreateTableDef &MEDIUMTEXT(ConstStrA name);
-	CreateTableDef &LONGTEXT(ConstStrA name);
-	CreateTableDef &SET(ConstStrA name);
-	CreateTableDef &ENUM(ConstStrA name);
+	CreateTableDef &BIT(StrViewA name);
+	CreateTableDef &TINYINT(StrViewA name);
+	CreateTableDef &SMALLINT(StrViewA name);
+	CreateTableDef &MEDIUMINT(StrViewA name);
+	CreateTableDef &INT(StrViewA name);
+	CreateTableDef &BIGINT(StrViewA name);
+	CreateTableDef &REAL(StrViewA name);
+	CreateTableDef &DOUBLE(StrViewA name);
+	CreateTableDef &FLOAT(StrViewA name);
+	CreateTableDef &DECIMAL(StrViewA name, unsigned int length, unsigned int decimals);
+	CreateTableDef &NUMERIC(StrViewA name, unsigned int length, unsigned int decimals);
+	CreateTableDef &UNSIGNED_BIT(StrViewA name);
+	CreateTableDef &UNSIGNED_TINYINT(StrViewA name);
+	CreateTableDef &UNSIGNED_SMALLINT(StrViewA name);
+	CreateTableDef &UNSIGNED_MEDIUMINT(StrViewA name);
+	CreateTableDef &UNSIGNED_INT(StrViewA name);
+	CreateTableDef &UNSIGNED_BIGINT(StrViewA name);
+	CreateTableDef &UNSIGNED_REAL(StrViewA name);
+	CreateTableDef &UNSIGNED_DOUBLE(StrViewA name);
+	CreateTableDef &UNSIGNED_FLOAT(StrViewA name);
+	CreateTableDef &UNSIGNED_DECIMAL(StrViewA name, unsigned int length, unsigned int decimals);
+	CreateTableDef &UNSIGNED_NUMERIC(StrViewA name, unsigned int length, unsigned int decimals);
+	CreateTableDef &DATE(StrViewA name);
+	CreateTableDef &TIME(StrViewA name);
+	CreateTableDef &TIMESTAMP(StrViewA name);
+	CreateTableDef &DATETIME(StrViewA name);
+	CreateTableDef &YEAR(StrViewA name);
+	CreateTableDef &CHAR(StrViewA name, unsigned int length);
+	CreateTableDef &VARCHAR(StrViewA name, unsigned int length);
+	CreateTableDef &BINARY(StrViewA name, unsigned int length);
+	CreateTableDef &VARBINARY(StrViewA name, unsigned int length);
+	CreateTableDef &TINYBLOB(StrViewA name);
+	CreateTableDef &BLOB(StrViewA name);
+	CreateTableDef &MEDIUMBLOB(StrViewA name);
+	CreateTableDef &LONGBLOB(StrViewA name);
+	CreateTableDef &TINYTEXT(StrViewA name);
+	CreateTableDef &TEXT(StrViewA name);
+	CreateTableDef &MEDIUMTEXT(StrViewA name);
+	CreateTableDef &LONGTEXT(StrViewA name);
+	CreateTableDef &SET(StrViewA name);
+	CreateTableDef &ENUM(StrViewA name);
 	///Value for SET or ENUM. It is terminated by another field definition
-	CreateTableDef &val(ConstStrA name);
+	CreateTableDef &val(StrViewA name);
 	///Sets charset of previous text field
-	CreateTableDef &charset(ConstStrA charset);
+	CreateTableDef &charset(StrViewA charset);
 	///Sets collation of previous text field
-	CreateTableDef &collate(ConstStrA collate);
+	CreateTableDef &collate(StrViewA collate);
 	///Allows previous field to be set to NULL
 	CreateTableDef &null();
 	///Disallow previous field to be set to NULL
@@ -551,13 +555,13 @@ public:
 	///Specify default value. Use arg() to specify value
 	CreateTableDef &DEFAULT();
 	///Definition of autoincrement integer
-	CreateTableDef &AUTO_INCREMENT_INT(ConstStrA name);
+	CreateTableDef &AUTO_INCREMENT_INT(StrViewA name);
 	///Definition of autoincrement big integer
-	CreateTableDef &AUTO_INCREMENT_BIGINT(ConstStrA name);
+	CreateTableDef &AUTO_INCREMENT_BIGINT(StrViewA name);
 	///Definition of autoincrement unsigned integer
-	CreateTableDef &AUTO_INCREMENT_UNSIGNED_INT(ConstStrA name);
+	CreateTableDef &AUTO_INCREMENT_UNSIGNED_INT(StrViewA name);
 	///Definition of autoincrement unsigned big integer
-	CreateTableDef &AUTO_INCREMENT_UNSIGNED_BIGINT(ConstStrA name);
+	CreateTableDef &AUTO_INCREMENT_UNSIGNED_BIGINT(StrViewA name);
 	///Definition of primary key. Use col() to specify columns
 	CreateTableDef &PRIMARY_KEY();
 	///Definition of index. Use col() to specify columns
@@ -565,7 +569,7 @@ public:
 	///Definition of unique key. Use col() to specify columns
 	CreateTableDef &UNIQUE();
 	///Include column name into previous index defintion. Terminates by another definition
-	CreateTableDef &col(ConstStrA name);
+	CreateTableDef &col(StrViewA name);
 	///Definition foreing key. Use col to specify columns. It must be followed by REFERENCES()
 	CreateTableDef &FOREIGN_KEY();
 	///Definition foreing key with cascade deletion. Use col to specify columns. It must be followed by REFERENCES()
@@ -575,20 +579,20 @@ public:
 	///Definition foreing key with cascade deletion and update. Use col to specify columns. It must be followed by REFERENCES()
 	CreateTableDef &FOREIGN_KEY_CASCADE_UPDATABLE();
 	///Definition of reference table of previous foreign key
-	CreateTableDef &REFERENCES(ConstStrA name);
+	CreateTableDef &REFERENCES(StrViewA name);
 
 	Query &leave();
 
 protected:
-	ConstStrA sep;
-	ConstStrA frend;
-	ConstStrA fieldsep;
+	StrViewA sep;
+	StrViewA frend;
+	StrViewA fieldsep;
 
 	void addSep();
-	CreateTableDef &fieldDef(ConstStrA type, ConstStrA fieldName);
-	CreateTableDef &fieldDef(ConstStrA type, ConstStrA fieldName, natural len);
-	CreateTableDef &fieldDef(ConstStrA type, ConstStrA fieldName, natural len, natural decm);
-	CreateTableDef &append(ConstStrA text) {Query::append(text);return *this;}
+	CreateTableDef &fieldDef(StrViewA type, StrViewA fieldName);
+	CreateTableDef &fieldDef(StrViewA type, StrViewA fieldName, unsigned int len);
+	CreateTableDef &fieldDef(StrViewA type, StrViewA fieldName, unsigned int len, unsigned int decm);
+	CreateTableDef &append(StrViewA text) {Query::append(text);return *this;}
 
 };
 
@@ -597,11 +601,8 @@ protected:
 class EmptyQueryException_t: public Exception_t {
 public:
 
-	EmptyQueryException_t(const ProgramLocation &loc)
-		:Exception_t(loc) {}
-	LIGHTSPEED_EXCEPTIONFINAL;
 protected:
-	void message(LightSpeed::ExceptionMsg &msg) const;
+	String getMessage() const throw() override;
 };
 
 }

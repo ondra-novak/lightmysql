@@ -6,9 +6,6 @@
  */
 
 #include "json.h"
-#include <lightspeed/base/text/textParser.tcc>
-#include <lightspeed/base/containers/convertString.tcc>
-#include <lightspeed/utils/base64.tcc>
 namespace LightMySQL {
 
 
